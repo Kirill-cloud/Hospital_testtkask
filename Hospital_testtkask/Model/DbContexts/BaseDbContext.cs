@@ -1,5 +1,4 @@
-﻿using Hospital_testtkask.Model.DbContexts.Configurations;
-using Hospital_testtkask.Model.Entities;
+﻿using Hospital_testtkask.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hospital_testtkask.Model.DbContexts
@@ -17,8 +16,6 @@ namespace Hospital_testtkask.Model.DbContexts
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			modelBuilder.ApplyConfiguration(new PatientConfiguration());
-			modelBuilder.ApplyConfiguration(new PatientToDomainConfiguration());
 		}
 	}
 }

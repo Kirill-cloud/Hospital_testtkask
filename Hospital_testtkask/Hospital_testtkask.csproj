@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="Model\DbContexts\Configurations\" />
     <Folder Include="Model\Migrations\" />
   </ItemGroup>
 
