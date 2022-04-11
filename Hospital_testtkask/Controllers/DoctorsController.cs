@@ -61,25 +61,48 @@ namespace Hospital_testtkask.Controllers
 
 		[HttpGet]
 		[Route("all")]
-		public List<DoctorOverview> GetPatients(int page = 0, int countOnPage = 0)
+		public List<DoctorOverview> GetDoctors(int page = 0, int countOnPage = 0, string orderBy = null)
 		{
 			var doctors =
 				_dbContext.Doctors
 					.Include(p => p.Domain)
 					.Include(p => p.Specialization)
-					.Include(p => p.Cabinet)
-					.OrderBy(p => p.Name)
-					.Skip(countOnPage * page)
-					.Take(countOnPage != 0 ? countOnPage : _dbContext.Patients.Count());
+					.Include(p => p.Cabinet);
+
+			IOrderedQueryable<Doctor> orderedDoctors;
+
+			switch (orderBy)
+			{
+				case null:
+					orderedDoctors = doctors.OrderBy(p => p.Id);
+					break;
+				case "domain":
+					orderedDoctors = doctors.OrderBy(p => p.Domain.Name);
+					break;
+				case "surname":
+					orderedDoctors = doctors.OrderBy(p => p.Surname);
+					break;
+				case "cabinet":
+					orderedDoctors = doctors.OrderBy(p => p.Cabinet.Number);
+					break;
+				case "specialization":
+					orderedDoctors = doctors.OrderBy(p => p.Specialization.Name);
+					break;
+				default: throw new ArgumentException($"Unknown sorting field: {orderBy}");
+			}
+
+			var doctorsPage = orderedDoctors
+				.Skip(countOnPage * page)
+				.Take(countOnPage != 0 ? countOnPage : _dbContext.Doctors.Count());
 
 			var doctorsOverview = new List<DoctorOverview>();
 
-			foreach (var doctor in doctors) // думаю было бы лучше тоже через linq, но не смог придумать как
+			foreach (var doctor in doctorsPage) // думаю было бы лучше тоже через linq, но не смог придумать как
 			{
 				doctorsOverview.Add(new DoctorOverview(doctor));
 			}
 
-			// if (patients.Count() == 0) не уверен как тут лучше поступить 
+			// if (doctors.Count() == 0) не уверен как тут лучше поступить 
 			//	 return NoContent(); 
 
 			return doctorsOverview;

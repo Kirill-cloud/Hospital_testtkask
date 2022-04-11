@@ -57,26 +57,46 @@ namespace Hospital_testtkask.Controllers
 
 		[HttpGet]
 		[Route("all")]
-		public List<PatientOverview> GetPatients(int page = 0, int countOnPage = 0)
+		public List<PatientOverview> GetPatients(int page = 0, int countOnPage = 0, string orderBy = null)
 		{
 			var patients =
 				_dbContext.Patients
-					.Include(p => p.Domain)
-					.OrderBy(p => p.Name)
-					.Skip(countOnPage * page)
-					.Take(countOnPage != 0 ? countOnPage : _dbContext.Patients.Count());
+					.Include(p => p.Domain);
 
-			var patientsOverview = new List<PatientOverview>();
+			IOrderedQueryable<Patient> orderedPatients;
 
-			foreach (var patient in patients) // думаю было бы лучше тоже через linq, но не смог придумать как
+			switch (orderBy)
 			{
-				patientsOverview.Add(new PatientOverview(patient));
+				case null:
+					orderedPatients = patients.OrderBy(p => p.Id);
+					break;
+				case "domain":
+					orderedPatients = patients.OrderBy(p => p.Domain.Name);
+					break;
+				case "surname":
+					orderedPatients = patients.OrderBy(p => p.Surname);
+					break;
+				case "gender":
+					orderedPatients = patients.OrderBy(p => p.Gender);
+					break;
+				default: throw new ArgumentException($"Unknown sorting field: {orderBy}");
+			}
+
+			var patientsPage = orderedPatients
+				.Skip(countOnPage * page)
+				.Take(countOnPage != 0 ? countOnPage : _dbContext.Patients.Count());
+
+			var patientsOverviewPage = new List<PatientOverview>();
+
+			foreach (var patient in patientsPage) // думаю было бы лучше тоже через linq, но не смог придумать как
+			{
+				patientsOverviewPage.Add(new PatientOverview(patient));
 			}
 
 			// if (patients.Count() == 0) не уверен как тут лучше поступить 
 			//	 return NoContent(); 
 
-			return patientsOverview;
+			return patientsOverviewPage;
 		}
 
 		[HttpDelete]
