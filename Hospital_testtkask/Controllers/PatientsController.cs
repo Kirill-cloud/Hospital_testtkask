@@ -30,7 +30,6 @@ namespace Hospital_testtkask.Controllers
 		public PatientDetails Get(int id)
 		{
 			var patient = _dbContext.Patients
-				.AsNoTracking()
 				.Include(p => p.Domain)
 				.FirstOrDefault(p => p.Id == id);
 			if (patient == null)
@@ -45,7 +44,6 @@ namespace Hospital_testtkask.Controllers
 		public PatientOverview GetOverview(int id)
 		{
 			var patient = _dbContext.Patients
-				.AsNoTracking()
 				.Include(p => p.Domain)
 				.FirstOrDefault(p => p.Id == id);
 			if (patient == null)
@@ -104,7 +102,6 @@ namespace Hospital_testtkask.Controllers
 		public async Task<ActionResult> DeletePatient(int id)
 		{
 			var patient = _dbContext.Patients
-				.AsNoTracking()
 				.Include(p => p.Domain)
 				.FirstOrDefault(p => p.Id == id);
 			if (patient == null)
@@ -122,7 +119,6 @@ namespace Hospital_testtkask.Controllers
 		[Route("create")]
 		public async Task<ActionResult> CreateNew([FromBody] PatientDetails patient)
 		{
-
 			var patientDomain = _dbContext.Domains.FirstOrDefault(d => d.Id == patient.DomainId);
 
 			var newPatient = new Patient(patient, patientDomain);
@@ -136,9 +132,8 @@ namespace Hospital_testtkask.Controllers
 		[Route("edit")]
 		public async Task<ActionResult> Edit([FromBody] PatientDetails patient)
 		{
-
 			var patientDomain = _dbContext.Domains.FirstOrDefault(d => d.Id == patient.DomainId);
-			var patientToEdit = _dbContext.Patients.AsNoTracking().FirstOrDefault(p => p.Id == patient.Id);
+			var patientToEdit = _dbContext.Patients.AsNoTracking().FirstOrDefault(p => p.Id == patient.Id); // тут трекается, и не дает изменить сущность
 
 			if (patientToEdit == null)
 				throw new ArgumentException(nameof(patient.Id));

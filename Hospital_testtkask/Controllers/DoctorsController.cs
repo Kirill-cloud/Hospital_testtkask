@@ -30,7 +30,6 @@ namespace Hospital_testtkask.Controllers
 		public DoctorDetails Get(int id)
 		{
 			var doctor = _dbContext.Doctors
-				.AsNoTracking()
 				.Include(d => d.Domain)
 				.Include(d => d.Cabinet)
 				.Include(d => d.Specialization)
@@ -47,7 +46,6 @@ namespace Hospital_testtkask.Controllers
 		public DoctorOverview GetOverview(int id)
 		{
 			var doctor = _dbContext.Doctors
-				.AsNoTracking()
 				.Include(d => d.Domain)
 				.Include(d => d.Cabinet)
 				.Include(d => d.Specialization)
@@ -113,10 +111,6 @@ namespace Hospital_testtkask.Controllers
 		public async Task<ActionResult> DeletePatient(int id)
 		{
 			var doctor = _dbContext.Doctors
-				.AsNoTracking()
-				.Include(p => p.Domain)
-				.Include(p => p.Specialization)
-				.Include(p => p.Cabinet)
 				.FirstOrDefault(p => p.Id == id);
 			if (doctor == null)
 			{
@@ -145,7 +139,6 @@ namespace Hospital_testtkask.Controllers
 		[Route("edit")]
 		public async Task<ActionResult> Edit([FromBody] DoctorDetails doctor)
 		{
-
 			var editedDoctor = BuildNewDoctor(doctor);
 			editedDoctor.Id = doctor.Id;
 
